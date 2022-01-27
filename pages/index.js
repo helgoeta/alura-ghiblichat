@@ -3,36 +3,6 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import {Box, Button, Text, TextField, Image} from '@skynexui/components';
 
-function GlobalStyle() {
-    return (
-        <style global jsx>
-            {`
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                font-family: 'Montserrat', sans-serif;
-            }
-            /*App fit Height*/
-            html, body, #__next {
-                min-height: 100vh;
-                display: flex;
-                flex: 1;
-            }
-            #__next {
-                flex: 1;
-            }
-            #__next > * {
-                flex: 1;
-            }
-            /* ./App fit Height*/
-            `}
-        </style>
-    );
-}
-
 function Title(props) {
   return (
       <>
@@ -49,11 +19,12 @@ function Title(props) {
   
 export default function PaginaInicial() {
     const [username, setUsername] = React.useState('helgoeta');
+    // troca e avisa quem precisa para trocar
     const roteamento = useRouter();
+    //[use...] sao ganchos
   
     return (
       <>
-        <GlobalStyle/>
         <Box
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -95,19 +66,7 @@ export default function PaginaInicial() {
               <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[200] }}>
                 {appConfig.name}
               </Text>
-  
-              {/* <input
-                              type="text"
-                              value={username}
-                              onChange={function (event) {
-                                  console.log('usuario digitou', event.target.value);
-                                  // Onde ta o valor?
-                                  const valor = event.target.value;
-                                  // Trocar o valor da variavel
-                                  // através do React e avise quem precisa
-                                  setUsername(valor);
-                              }}
-                          /> */}
+
               <TextField
                 value={username}
                 onChange={function (event) {
@@ -115,8 +74,8 @@ export default function PaginaInicial() {
                   // Onde ta o valor?
                   const valor = event.target.value;
                   // Trocar o valor da variavel
-                  // através do React e avise quem precisa
                   setUsername(valor);
+                  //o react agrupa as alteracoes e envia em lote para o navegador para renderizar, gera uma melhor otimizacao com uma resposta mais rapida
                 }}
                 fullWidth
                 styleSheet={{
