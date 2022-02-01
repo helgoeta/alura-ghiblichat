@@ -1,33 +1,62 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 /*
-Pensando como usuário:
-- Digita no campo de mensagem de texto
-- Aperta enter para enviar
-- A mensagem precisa aparecer na listagem
-
-O que como dev nós precisamos fazer?
-- [X] Campo text criado
-- [X] Vamos usar o Onchange e usa o useState (ter if pra caso seja enter para limpar a variável)
-- [X] Lista de mensagens
+fetch(`${SUPABASE_URL}/rest/v1/messages?select=*`, {
+    headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseAnonKey, 
+        'Authorization': 'Bearer ' + supabaseAnonKey,
+    }
+})
+    .then((res) => {
+        return res.json();
+    })
+    .then((response) => {
+        console.log(response);
+    })
 */
+
 export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
+    React.useEffect(() => {
+        supabaseClient
+        .from('mensagens-chat')
+        .select('*')
+        .order('id', { ascending: false})
+        .then(({ data }) => {
+            console.log('Dados da consulta: ', data);
+            setListaDeMensagens(data);
+        });
+    }, []);
+
 function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-        id: listaDeMensagens.length + 1,
         from: 'helgoeta',
         message: novaMensagem,
     };
-    // Chamada de um backend
-    setListaDeMensagens([
-        mensagem,
-        ...listaDeMensagens,
-    ]);
+    supabaseClient
+        .from('mensagens-chat')
+        .insert([
+            // ! tem que ser um objeto com os mesmos campos
+            mensagem
+        ])
+        .then(({ data }) => {
+            console.log('Criando a mensagem: ', data);
+            setListaDeMensagens([
+                data[0],
+                ...listaDeMensagens,
+            ]);
+        });
+
     setMensagem('');
 }
 
@@ -169,7 +198,7 @@ function MessageList(props) {
                                 display: 'inline-block',
                                 marginRight: '8px',
                             }}
-                            src={`https://github.com/helgoeta.png`}
+                            src={`https://github.com/${mensagem.from}.png`}
                         />
                         <Text tag="strong">
                             {mensagem.from}
